@@ -6,7 +6,7 @@ module ::RtLuckySpin
 
     belongs_to :user
 
-    enum event_type: {
+    enum :event_type, {
       daily_grant: 0,
       spin_consumed: 1,
       spin_points: 2,

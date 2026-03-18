@@ -7,7 +7,8 @@ module ::RtCollectionsTodo
     belongs_to :user
     belongs_to :upload, optional: true
 
-    enum list_type: { collection: 0, todo: 1 }
+    # Rails 8 不再支持 enum 的 keyword 参数写法（enum list_type: {...}）
+    enum :list_type, { collection: 0, todo: 1 }
 
     validates :user_id, presence: true
     validates :list_type, presence: true

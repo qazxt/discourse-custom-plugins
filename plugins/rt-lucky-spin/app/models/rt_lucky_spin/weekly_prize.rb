@@ -6,7 +6,8 @@ module ::RtLuckySpin
 
     belongs_to :winner, class_name: "User", foreign_key: "winner_user_id", optional: true
 
-    enum shipping_status: { pending: 0, shipped: 1, cancelled: 2 }
+    # Rails 8 兼容：使用位置参数
+    enum :shipping_status, { pending: 0, shipped: 1, cancelled: 2 }
 
     validates :week_start_date, presence: true
     validates :prize_name, presence: true, length: { maximum: 200 }
