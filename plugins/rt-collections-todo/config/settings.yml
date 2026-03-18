@@ -1,0 +1,5 @@
+plugins:
+  rt_collections_todo_enabled:
+    default: true
+    client: true
+

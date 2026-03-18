@@ -1,0 +1,11 @@
+{{#if this.user}}
+  <div class="rt-collections-todo-usercard">
+    <a class="btn btn-small" href="/u/{{this.user.username}}/activity/collection">
+      {{i18n "rt_collections_todo.my_collection"}}
+    </a>
+    <a class="btn btn-small" href="/u/{{this.user.username}}/activity/todo">
+      {{i18n "rt_collections_todo.to_do_list"}}
+    </a>
+  </div>
+{{/if}}
+

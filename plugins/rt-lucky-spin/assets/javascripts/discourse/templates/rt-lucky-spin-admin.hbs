@@ -1,0 +1,55 @@
+<section class="rt-lucky-spin-admin">
+  <header class="rt-lucky-spin__header">
+    <h1 class="rt-lucky-spin__title">{{i18n "rt_lucky_spin.admin_title"}}</h1>
+    <div class="rt-lucky-spin__meta">
+      <a class="btn" href="/lucky-spin">{{i18n "rt_lucky_spin.back_to_spin"}}</a>
+    </div>
+  </header>
+
+  <table class="rt-lucky-spin-admin__table">
+    <thead>
+      <tr>
+        <th>{{i18n "rt_lucky_spin.prize_name"}}</th>
+        <th>{{i18n "rt_lucky_spin.winner"}}</th>
+        <th>{{i18n "rt_lucky_spin.shipping_status"}}</th>
+        <th>{{i18n "rt_lucky_spin.shipping_note"}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.model as |prize|}}
+        <tr>
+          <td>{{prize.prize_name}}</td>
+          <td>
+            {{#if prize.winner_username}}
+              @{{prize.winner_username}}
+            {{else}}
+              —
+            {{/if}}
+          </td>
+          <td>
+            <ComboBox
+              @content={{array "pending" "shipped" "cancelled"}}
+              @valueProperty={{null}}
+              @nameProperty={{null}}
+              @value={{prize.shipping_status}}
+              @onChange={{fn (mut prize.shipping_status)}}
+            />
+          </td>
+          <td>
+            <Input @value={{prize.shipping_note}} />
+          </td>
+          <td>
+            <DButton
+              @label="save"
+              class="btn-primary"
+              @disabled={{eq this.savingId prize.id}}
+              @action={{fn this.updateShipping prize prize.shipping_status prize.shipping_note}}
+            />
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
+

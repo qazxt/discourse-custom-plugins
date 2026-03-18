@@ -1,0 +1,32 @@
+plugins:
+  rt_lucky_spin_enabled:
+    default: true
+    client: true
+  rt_lucky_spin_daily_grant_enabled:
+    default: true
+  rt_lucky_spin_points_100_weight:
+    default: 1
+  rt_lucky_spin_points_25_weight:
+    default: 4
+  rt_lucky_spin_points_5_weight:
+    default: 12
+  rt_lucky_spin_no_prize_weight:
+    default: 30
+  rt_lucky_spin_points_source_label:
+    default: "Lucky Spin"
+  rt_lucky_spin_admin_notify_username:
+    default: ""
+  rt_lucky_spin_product_prizes:
+    default: ""
+    type: list
+  rt_lucky_spin_product_prize_chance_per_mille:
+    default: 5
+  rt_lucky_spin_weekly_deadline_wday:
+    default: 0
+  rt_lucky_spin_weekly_deadline_hour:
+    default: 23
+  rt_lucky_spin_weekly_deadline_minute:
+    default: 0
+  rt_lucky_spin_weekly_force_window_hours:
+    default: 24
+

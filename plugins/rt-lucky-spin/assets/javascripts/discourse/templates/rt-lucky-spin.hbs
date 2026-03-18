@@ -1,0 +1,35 @@
+<section class="rt-lucky-spin">
+  <header class="rt-lucky-spin__header">
+    <h1 class="rt-lucky-spin__title">{{i18n "rt_lucky_spin.menu_title"}}</h1>
+    <div class="rt-lucky-spin__meta">
+      {{i18n "rt_lucky_spin.available_spins"}}: <b>{{this.model.available_spins}}</b>
+    </div>
+  </header>
+
+  <RtLuckySpinWheel @result={{this.result}} />
+
+  <div class="rt-lucky-spin__actions">
+    <DButton
+      @label="rt_lucky_spin.spin_button"
+      class="btn-primary"
+      @disabled={{or this.spinning (lte this.model.available_spins 0)}}
+      @action={{this.spin}}
+    />
+    {{#if this.currentUser.admin}}
+      <a class="btn" href="/lucky-spin/admin">{{i18n "rt_lucky_spin.admin_title"}}</a>
+    {{/if}}
+  </div>
+
+  {{#if this.result}}
+    <div class="rt-lucky-spin__result">
+      {{#if (eq this.result.type "points")}}
+        {{i18n "rt_lucky_spin.result_points" points=this.result.points}}
+      {{else if (eq this.result.type "product")}}
+        {{i18n "rt_lucky_spin.result_product" name=this.result.name}}
+      {{else}}
+        {{i18n "rt_lucky_spin.result_no_prize"}}
+      {{/if}}
+    </div>
+  {{/if}}
+</section>
+
