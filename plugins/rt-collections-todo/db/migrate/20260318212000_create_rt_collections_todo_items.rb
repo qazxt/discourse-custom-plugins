@@ -12,7 +12,9 @@ class CreateRtCollectionsTodoItems < ActiveRecord::Migration[7.0]
       t.timestamps null: false
     end
 
-    add_index :rt_collections_todo_items, %i[user_id list_type position]
+    add_index :rt_collections_todo_items,
+              %i[user_id list_type position],
+              name: "idx_rt_ctodo_user_list_pos"
     add_index :rt_collections_todo_items, :upload_id
   end
 end

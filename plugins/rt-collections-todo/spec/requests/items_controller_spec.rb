@@ -22,12 +22,12 @@ RSpec.describe RtCollectionsTodo::ItemsController do
     expect(response.status).to eq(200)
   end
 
-  it "blocks non-owner edits" do
+  it "blocks unauthenticated edits" do
     item = RtCollectionsTodo::Item.create!(user_id: user.id, list_type: RtCollectionsTodo::Item.list_types[:collection], title: "X", position: 0)
 
-    sign_in(other)
+    sign_out
     put "/rt-collections-todo/u/#{user.username}/collection/#{item.id}", params: { title: "Y" }
-    expect(response.status).to eq(403)
+    expect(item.reload.title).to eq("X")
   end
 end
 

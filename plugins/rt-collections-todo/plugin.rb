@@ -31,13 +31,6 @@ after_initialize do
   require_relative "app/serializers/rt_collections_todo/item_serializer"
   require_relative "app/serializers/rt_collections_todo/items_list_serializer"
 
-  RtCollectionsTodo::Engine.routes.draw do
-    get "/u/:username/:list_type" => "items#index"
-    post "/u/:username/:list_type" => "items#create"
-    put "/u/:username/:list_type/:id" => "items#update"
-    delete "/u/:username/:list_type/:id" => "items#destroy"
-  end
-
   Discourse::Application.routes.append do
     mount ::RtCollectionsTodo::Engine, at: "/rt-collections-todo"
   end

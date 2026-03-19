@@ -37,15 +37,6 @@ after_initialize do
   require_relative "app/serializers/rt_lucky_spin/spin_state_serializer"
   require_relative "app/serializers/rt_lucky_spin/weekly_prize_serializer"
 
-  RtLuckySpin::Engine.routes.draw do
-    get "/state" => "spins#state"
-    post "/spin" => "spins#spin"
-    get "/history" => "spins#history"
-
-    get "/admin/weekly" => "admin#weekly"
-    put "/admin/weekly/:id/shipping" => "admin#update_shipping"
-  end
-
   Discourse::Application.routes.append do
     mount ::RtLuckySpin::Engine, at: "/rt-lucky-spin"
   end

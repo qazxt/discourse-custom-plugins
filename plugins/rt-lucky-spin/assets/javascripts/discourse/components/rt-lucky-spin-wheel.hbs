@@ -1,0 +1,18 @@
+<div class="rt-lucky-spin-wheel" {{did-update this.onResultChanged @result}}>
+  <div class="rt-lucky-spin-wheel__pointer" aria-hidden="true"></div>
+
+  <div
+    class="rt-lucky-spin-wheel__wheel {{if this.animating 'is-animating'}}"
+    style={{this.wheelStyle}}
+    aria-label="Lucky Spin Wheel"
+  >
+    {{#each this.segments as |seg i|}}
+      <div class="rt-lucky-spin-wheel__segment" style={{this.segmentStyle i}}>
+        <div class="rt-lucky-spin-wheel__segment-inner">
+          <span class="rt-lucky-spin-wheel__segment-label">{{seg.label}}</span>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
