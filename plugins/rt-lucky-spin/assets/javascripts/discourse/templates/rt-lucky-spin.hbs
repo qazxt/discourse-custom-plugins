@@ -16,7 +16,7 @@
       @action={{this.spin}}
     />
     {{#if this.currentUser.admin}}
-      <a class="btn" href="/lucky-spin/admin">{{i18n "rt_lucky_spin.admin_title"}}</a>
+      <LinkTo @route="rt-lucky-spin-admin" class="btn">{{i18n "rt_lucky_spin.admin_title"}}</LinkTo>
     {{/if}}
   </div>
 
@@ -32,4 +32,3 @@
     </div>
   {{/if}}
 </section>
-

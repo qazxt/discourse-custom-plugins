@@ -1,0 +1,245 @@
+本地启动与插件联调计划
+
+范围
+
+
+
+
+
+插件：rt-collections-todo、rt-lucky-spin
+
+
+
+环境：~/discourse（WSL dev 容器）
+
+
+
+目标：服务可访问、插件页面可用、后端插件测试可执行，报错闭环修复
+
+执行阶段
+
+阶段1：环境重启与基线确认
+
+
+
+
+
+在 ~/discourse 执行：
+
+
+
+
+
+./d/shutdown_dev
+
+
+
+./d/boot_dev
+
+
+
+若出现 DB/初始化缺失类错误，切换为：
+
+
+
+
+
+./d/boot_dev --init
+
+
+
+验收：容器启动成功，无 boot 级别异常。
+
+阶段2：应用进程启动
+
+
+
+
+
+分别启动：
+
+
+
+
+
+./d/rails s
+
+
+
+./d/ember-cli
+
+
+
+访问：http://localhost:4200
+
+
+
+验收：页面可打开，Rails/Ember 终端无持续性 fatal error。
+
+阶段2b：文案与路由（若占位符 / 找不到页面）
+
+- 占位符：确认 `plugins/*/config/locales/client.en.yml`（及 `client.zh_CN.yml` 等）存在，且为 `locale: js: <插件键>: ...`；改后 **重启 Rails** 再刷新。
+- 转盘 /lucky-spin 404（permalink-check）：检查 **`rt-lucky-spin-route-map.js`** 是否扁平注册了 `rt-lucky-spin`、`rt-lucky-spin-admin`；侧栏仅用 `href`；改后同步、（推荐）清 `app/assets/generated/rt-lucky-spin`、重启 Rails+Ember。:3000 也 404 时查 **`rt_lucky_spin_enabled`**。
+
+阶段3：插件功能冒烟
+
+
+
+
+
+rt-collections-todo：
+
+
+
+
+
+用户页入口是否出现（collection/todo）
+
+
+
+新增条目、上传图片、查看他人只读
+
+
+
+rt-lucky-spin：
+
+
+
+
+
+/lucky-spin 可打开
+
+
+
+可触发抽奖；结果展示、次数变化
+
+
+
+管理页 /lucky-spin/admin 可打开并可更新发货状态
+
+
+
+验收：关键路径无 5xx/前端崩溃。
+
+阶段4：插件测试执行
+
+
+
+
+
+先跑插件级后端测试：
+
+
+
+
+
+./d/rake "plugin:spec[rt-collections-todo]"
+
+
+
+./d/rake "plugin:spec[rt-lucky-spin]"
+
+
+
+若需要全量回归：
+
+
+
+
+
+./d/rake autospec
+
+
+
+验收：插件相关 spec 通过；若提示缺少 spec，仅作为信息记录。
+
+阶段5：问题修复闭环（反复执行）
+
+
+
+
+
+出现报错时按优先级处理：
+
+
+
+
+
+启动阻断（Boot/Rails 初始化）
+
+
+
+API 5xx / 权限错误
+
+
+
+前端路由/组件报错
+
+
+
+测试失败
+
+
+
+每次修复后重复：
+
+
+
+
+
+重启受影响进程（必要时 shutdown_dev + boot_dev）
+
+
+
+重跑受影响测试和冒烟路径
+
+
+
+通过标准：
+
+
+
+
+
+rails s、ember-cli 稳定
+
+
+
+两插件主要功能可用
+
+
+
+插件测试可通过或有明确可接受的缺测说明
+
+关键日志采集点
+
+
+
+
+
+Rails 启动异常堆栈
+
+
+
+浏览器控制台前端错误
+
+
+
+plugin:spec[...] 失败用例与回溯
+
+风险与应对
+
+
+
+
+
+Discourse/Rails 版本差异（如 enum 语法、插件 API 变动）：优先做版本兼容写法
+
+
+
+容器状态脏导致误报：优先做完整重启再复测
+
+
+
+单个失败用例拖慢排查：先局部重跑失败 spec，再全量验证
+

@@ -6,4 +6,3 @@ export default class RtLuckySpinRoute extends Route {
     return ajax("/rt-lucky-spin/state");
   }
 }
-

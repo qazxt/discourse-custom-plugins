@@ -1,4 +1,5 @@
 <div class="rt-lucky-spin-wheel" {{did-update this.onResultChanged @result}}>
+  {{! 箭头朝下指向圆心（常见转盘）；原先 border-bottom 三角形在顶部时等价于「朝上」，易感觉反了 }}
   <div class="rt-lucky-spin-wheel__pointer" aria-hidden="true"></div>
 
   <div
@@ -6,13 +7,9 @@
     style={{this.wheelStyle}}
     aria-label="Lucky Spin Wheel"
   >
+    <div class="rt-lucky-spin-wheel__face" style={{this.faceStyle}}></div>
     {{#each this.segments as |seg i|}}
-      <div class="rt-lucky-spin-wheel__segment" style={{this.segmentStyle i}}>
-        <div class="rt-lucky-spin-wheel__segment-inner">
-          <span class="rt-lucky-spin-wheel__segment-label">{{seg.label}}</span>
-        </div>
-      </div>
+      <span class="rt-lucky-spin-wheel__label" style={{this.labelStyle i}}>{{seg.label}}</span>
     {{/each}}
   </div>
 </div>
-

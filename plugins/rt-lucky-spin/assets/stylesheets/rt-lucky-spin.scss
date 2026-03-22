@@ -39,24 +39,28 @@
   margin: 1rem auto 0;
 }
 
+/* 顶点朝下指向圆心；参考：略抬高 + 红色三角 + 阴影 */
 .rt-lucky-spin-wheel__pointer {
   position: absolute;
-  top: -6px;
   left: 50%;
-  transform: translateX(-50%);
+  top: -20px;
+  z-index: 20;
   width: 0;
   height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 18px solid var(--danger);
-  z-index: 2;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 30px solid #ff4757;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.3));
 }
 
 .rt-lucky-spin-wheel__wheel {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 8px solid var(--primary-low);
+  /* 参考转盘：白边 + 外阴影 */
+  border: 8px solid var(--secondary);
+  box-shadow: 0 0 20px rgb(0 0 0 / 0.15);
   background: var(--primary-very-low);
   position: relative;
   overflow: hidden;
@@ -64,51 +68,40 @@
 }
 
 .rt-lucky-spin-wheel__wheel.is-animating {
-  transition: transform 3.1s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 与 转盘参考.html 一致：4s + 缓出 */
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
 }
 
-.rt-lucky-spin-wheel__segment {
+.rt-lucky-spin-wheel__face {
   position: absolute;
   inset: 0;
-  transform-origin: 50% 50%;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.06);
 }
 
-.rt-lucky-spin-wheel__segment-inner {
+.rt-lucky-spin-wheel__label {
   position: absolute;
-  top: 0;
   left: 50%;
-  width: 50%;
-  height: 50%;
-  transform-origin: 0% 100%;
-  transform: rotate(36deg);
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  border-right: 1px solid var(--primary-low);
-  border-bottom: 1px solid var(--primary-low);
-}
-
-.rt-lucky-spin-wheel__segment:nth-child(1) .rt-lucky-spin-wheel__segment-inner {
-  background: var(--success-low);
-}
-.rt-lucky-spin-wheel__segment:nth-child(2) .rt-lucky-spin-wheel__segment-inner {
-  background: var(--tertiary-low);
-}
-.rt-lucky-spin-wheel__segment:nth-child(3) .rt-lucky-spin-wheel__segment-inner {
-  background: var(--primary-low);
-}
-.rt-lucky-spin-wheel__segment:nth-child(4) .rt-lucky-spin-wheel__segment-inner {
-  background: var(--highlight-low);
-}
-.rt-lucky-spin-wheel__segment:nth-child(5) .rt-lucky-spin-wheel__segment-inner {
-  background: var(--secondary-very-low);
-}
-
-.rt-lucky-spin-wheel__segment-label {
-  position: absolute;
-  top: 18px;
-  left: 10px;
+  top: 50%;
+  z-index: 1;
+  transform-origin: 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  white-space: nowrap;
   font-weight: 800;
+  font-size: var(--font-up-1);
+  line-height: 1.1;
   color: var(--primary);
-  text-shadow: 0 1px 0 var(--secondary);
+  /* 参考：浅色描边，在彩色扇区上可读 */
+  text-shadow:
+    -1px -1px 0 var(--secondary),
+    1px -1px 0 var(--secondary),
+    -1px 1px 0 var(--secondary),
+    1px 1px 0 var(--secondary);
+  pointer-events: none;
+  user-select: none;
 }
 
 .rt-lucky-spin-admin__table {

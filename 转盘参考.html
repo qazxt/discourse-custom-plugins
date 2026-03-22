@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终极居中转盘</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin-bottom: 40px;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff4757;
+            z-index: 20;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        /* 关键修改：文字容器 */
+        .prize-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+            text-shadow: 
+                -1px -1px 0 #fff,  
+                1px -1px 0 #fff,
+                -1px 1px 0 #fff,
+                1px 1px 0 #fff;
+            user-select: none;
+            /* 新增：让文字块内居中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 微调：避免文字贴边 */
+            padding: 0 5px;
+        }
+
+        button {
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(0, 184, 148, 0.4);
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.6);
+        }
+
+        button:disabled {
+            background: #b2bec3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            min-height: 30px;
+        }
+
+        .highlight {
+            color: #e17055;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel"></div>
+    </div>
+
+    <button id="spinBtn" onclick="startSpin()">开始抽奖</button>
+    <div id="result"></div>
+
+    <script>
+        // ================= 配置区域 =================
+        const prizes = [
+            "一等奖",
+            "二等奖",
+            "三等奖",
+            "谢谢参与",
+            "幸运奖"
+        ];
+
+        // 每个扇区独立颜色（马卡龙色系，柔和不刺眼）
+        const colors = [
+            '#ffeaa7', // 浅黄
+            '#fab1a0', // 浅粉
+            '#74b9ff', // 浅蓝
+            '#a29bfe', // 浅紫
+            '#55efc4'  // 浅绿
+        ];
+        // ===========================================
+
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spinBtn');
+        const resultDiv = document.getElementById('result');
+
+        const numPrizes = prizes.length;
+        const sectorAngle = 360 / numPrizes;
+        let currentRotation = 0;
+
+        function initWheel() {
+            // 1. 生成独立颜色背景
+            let gradientStr = 'conic-gradient(';
+            for (let i = 0; i < numPrizes; i++) {
+                const startDeg = i * sectorAngle;
+                const endDeg = (i + 1) * sectorAngle;
+                const color = colors[i % colors.length];
+                gradientStr += `${color} ${startDeg}deg ${endDeg}deg`;
+                if (i < numPrizes - 1) gradientStr += ', ';
+            }
+            gradientStr += ')';
+            wheel.style.background = gradientStr;
+
+            // 2. 生成文字并精确定位（三重居中）
+            prizes.forEach((prize, index) => {
+                const textEl = document.createElement('div');
+                textEl.className = 'prize-text';
+                textEl.innerText = prize;
+
+                // 计算扇区中心角度
+                const centerAngle = (index * sectorAngle) + (sectorAngle / 2);
+
+                // 半径：根据扇区数量动态调整
+                // 5等份时，125px 比较合适；如果是8等份，可设为110px
+                const radius = 125;
+
+                // 极坐标转直角坐标
+                const radian = (centerAngle - 90) * (Math.PI / 180);
+                const x = Math.cos(radian) * radius;
+                const y = Math.sin(radian) * radius;
+
+                // 【核心修复】三重变换：
+                // 1. translate(x, y) -> 移动到扇区中心半径位置
+                // 2. rotate(centerAngle) -> 旋转使文字径向排列
+                // 3. translateX(-50%) -> 向左偏移半个文字宽度，实现文字中心对齐扇区中线
+                textEl.style.transform = `translate(${x}px, ${y}px) rotate(${centerAngle}deg) translateX(-50%)`;
+
+                wheel.appendChild(textEl);
+            });
+        }
+
+        function startSpin() {
+            if (spinBtn.disabled) return;
+
+            spinBtn.disabled = true;
+            resultDiv.innerHTML = "抽奖中...";
+
+            const winningIndex = Math.floor(Math.random() * numPrizes);
+            const targetCenterAngle = (winningIndex * sectorAngle) + (sectorAngle / 2);
+            const rotateToTarget = (360 - targetCenterAngle) % 360;
+            const extraSpins = 360 * 6;
+
+            const currentMod = currentRotation % 360;
+            const nextRotation = currentRotation + (extraSpins + rotateToTarget - currentMod);
+            currentRotation = nextRotation;
+
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                resultDiv.innerHTML = `恭喜你获得：<span class="highlight">${prizes[winningIndex]}</span>`;
+                spinBtn.disabled = false;
+            }, 4000);
+        }
+
+        // 初始化
+        initWheel();
+    </script>
+</body>
+</html>

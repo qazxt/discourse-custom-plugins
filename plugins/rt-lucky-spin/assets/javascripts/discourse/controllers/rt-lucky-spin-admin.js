@@ -24,4 +24,3 @@ export default class RtLuckySpinAdminController extends Controller {
     }
   }
 }
-

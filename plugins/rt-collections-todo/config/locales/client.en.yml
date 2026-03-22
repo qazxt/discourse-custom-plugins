@@ -1,0 +1,9 @@
+en:
+  js:
+    rt_collections_todo:
+      my_collection: "My collection"
+      to_do_list: "To-do list"
+      add_item: "Add item"
+      product_name: "Product name"
+      product_photo: "Product photo"
+      notes: "Notes"

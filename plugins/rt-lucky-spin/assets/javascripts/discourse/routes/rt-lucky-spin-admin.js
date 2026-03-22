@@ -6,4 +6,3 @@ export default class RtLuckySpinAdminRoute extends Route {
     return ajax("/rt-lucky-spin/admin/weekly");
   }
 }
-

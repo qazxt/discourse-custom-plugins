@@ -1,0 +1,2 @@
+# 避免 Windows 检出 CRLF 导致 WSL 下 bash 脚本报错（unexpected end of file 等）
+*.sh text eol=lf

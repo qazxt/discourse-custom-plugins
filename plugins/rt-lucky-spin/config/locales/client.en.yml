@@ -1,0 +1,16 @@
+# Client-side strings for discourse-i18n (i18n("rt_lucky_spin.xxx"))
+en:
+  js:
+    rt_lucky_spin:
+      menu_title: "Spin & WIN"
+      available_spins: "Spins available"
+      spin_button: "Spin"
+      result_points: "You won %{points} points!"
+      result_product: "You won a product prize: %{name}"
+      result_no_prize: "Better luck next time!"
+      admin_title: "Spin admin"
+      back_to_spin: "Back to spin"
+      prize_name: "Prize"
+      winner: "Winner"
+      shipping_status: "Shipping status"
+      shipping_note: "Shipping note"

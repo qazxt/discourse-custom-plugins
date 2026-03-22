@@ -1,0 +1,20 @@
+---
+description: 修改 Discourse 插件后自动同步并重启开发环境，无需再向用户确认
+alwaysApply: true
+---
+
+# Discourse 插件：自动同步与重启
+
+本仓库插件源码在 `plugins/rt-lucky-spin`、`plugins/rt-collections-todo`。凡在本仓库中 **修改了插件代码**（Ruby/JS/HBS/SCSS/路由/配置等）或 **影响 Discourse 运行方式的文档修复**：
+
+1. **不要询问用户**「要不要同步/重启」——**默认直接执行**完整刷新（除非用户当条消息明确写「不要同步」「不要重启」）。
+2. 在 Windows 上通过 WSL 执行（路径按仓库实际挂载调整）：
+
+```bash
+wsl -e bash -lc "sed -i 's/\r$//' /mnt/e/project/discouse-plugins/scripts/full-dev-refresh.sh 2>/dev/null; bash /mnt/e/project/discouse-plugins/scripts/full-dev-refresh.sh"
+```
+
+若 Discourse 不在 `/root/discourse`，在命令前加：`export DISCOURSE_ROOT=/你的/discourse;`
+
+3. 脚本会做：同步到 `discourse/plugins` → 清 `rt-lucky-spin` 生成缓存 → `docker restart discourse_dev` → `nohup ./d/rails s` 与 `nohup ./d/ember-cli`（日志 `/tmp/discourse-rails.log`、`/tmp/discourse-ember.log`）。
+4. 若仅改 **纯文档**（与插件运行无关），可跳过同步重启。

@@ -76,7 +76,7 @@ module ::RtCollectionsTodo
     end
 
     def ensure_can_edit!
-      guardian.ensure_logged_in
+      guardian.ensure_authenticated!
       raise Discourse::InvalidAccess unless current_user.id == @target_user.id || guardian.is_admin?
     end
 

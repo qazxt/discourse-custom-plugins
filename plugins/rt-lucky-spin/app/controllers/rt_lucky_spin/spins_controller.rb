@@ -4,19 +4,25 @@ module ::RtLuckySpin
   class SpinsController < ::ApplicationController
     requires_plugin ::RtLuckySpin::PLUGIN_NAME
 
+    # Ember dev proxy（4200）等场景下可能缺少 XHR / JSON Accept，会触发 ApplicationController#check_xhr → RenderEmpty，
+    # 在挂载引擎里偶发表现为 500。此处为纯 JSON API，跳过 xhr 检查。
+    skip_before_action :check_xhr, only: %i[state history spin]
+
     before_action :ensure_enabled
+    # 勿在本控制器定义 ensure_logged_in 去调 guardian.ensure_logged_in：Guardian 无该方法，会 NoMethodError。
+    # 使用 ApplicationController#ensure_logged_in 即可。
     before_action :ensure_logged_in
 
     def state
       maybe_grant_daily!
-      render_serialized(
-        { available_spins: available_spins_for(current_user), today_granted: today_granted?(current_user) },
-        RtLuckySpin::SpinStateSerializer
-      )
+      # 勿对 Hash 使用 render_serialized：ApplicationSerializer 需要带属性的对象，否则易 500
+      render json: {
+               available_spins: available_spins_for(current_user),
+               today_granted: today_granted?(current_user),
+             }
     end
 
     def history
-      guardian.ensure_logged_in
       events = RtLuckySpin::SpinEvent.where(user_id: current_user.id).order(id: :desc).limit(50)
       render_serialized(events, RtLuckySpin::SpinEventSerializer)
     end
@@ -81,16 +87,17 @@ module ::RtLuckySpin
       end
     rescue ::RtLuckySpin::Error => e
       render json: { error: e.message }, status: 500
+    rescue StandardError => e
+      Rails.logger.error(
+        "[rt-lucky-spin] spins#spin #{e.class}: #{e.message}\n#{e.backtrace&.first(20)&.join("\n")}"
+      )
+      render json: { error: e.message, error_class: e.class.name }, status: 500
     end
 
     private
 
     def ensure_enabled
       raise Discourse::NotFound unless SiteSetting.rt_lucky_spin_enabled
-    end
-
-    def ensure_logged_in
-      guardian.ensure_logged_in
     end
 
     def today
@@ -142,6 +149,9 @@ module ::RtLuckySpin
         title: "Lucky Spin",
         raw: raw
       )
+    rescue StandardError => e
+      # 开发环境常见：用户未开私信、rate limit、站点配置等；不应导致抽奖 API 500
+      Rails.logger.warn("[rt-lucky-spin] send_user_pm! failed: #{e.class} #{e.message}")
     end
 
     def notify_admin_for_product!(prize_name)
@@ -158,6 +168,8 @@ module ::RtLuckySpin
         title: "Lucky Spin - 产品奖提醒",
         raw: "用户 @#{current_user.username} 抽中了产品奖励：#{prize_name}，请安排发货。"
       )
+    rescue StandardError => e
+      Rails.logger.warn("[rt-lucky-spin] notify_admin_for_product! failed: #{e.class} #{e.message}")
     end
   end
 end

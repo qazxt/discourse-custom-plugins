@@ -3,8 +3,7 @@ import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { inject as service } from "@ember/service";
-import Uploader from "discourse/lib/uploader";
+import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 
 export default class RtCollectionsTodoList extends Component {
@@ -22,7 +21,7 @@ export default class RtCollectionsTodoList extends Component {
   }
 
   get canEdit() {
-    return this.currentUser?.username === this.args.user.username;
+    return this.currentUser?.username === this.args.user?.username;
   }
 
   get headerTitle() {
@@ -32,10 +31,18 @@ export default class RtCollectionsTodoList extends Component {
   }
 
   get apiBase() {
-    return `/rt-collections-todo/u/${this.args.user.username}/${this.args.listType}`;
+    const u = this.args.user?.username;
+    if (!u) {
+      return "";
+    }
+    return `/rt-collections-todo/u/${u}/${this.args.listType}`;
   }
 
   async load() {
+    if (!this.args.user?.username) {
+      this.loading = false;
+      return;
+    }
     this.loading = true;
     try {
       const result = await ajax(this.apiBase);
@@ -95,8 +102,16 @@ export default class RtCollectionsTodoList extends Component {
       if (!file) {
         return;
       }
-      const uploader = new Uploader(file, { type: "composer" });
-      const upload = await uploader.upload();
+      // Discourse v2026+ 已移除 discourse/lib/uploader，走标准 POST /uploads.json
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_type", "composer");
+      const upload = await ajax("/uploads.json", {
+        type: "POST",
+        data,
+        processData: false,
+        contentType: false,
+      });
       this.newUploadId = upload.id;
     } catch (e) {
       popupAjaxError(e);

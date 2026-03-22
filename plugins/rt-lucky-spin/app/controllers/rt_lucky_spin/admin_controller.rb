@@ -4,6 +4,8 @@ module ::RtLuckySpin
   class AdminController < ::ApplicationController
     requires_plugin ::RtLuckySpin::PLUGIN_NAME
 
+    skip_before_action :check_xhr, only: [:weekly]
+
     before_action :ensure_enabled
     before_action :ensure_admin
 
@@ -35,7 +37,7 @@ module ::RtLuckySpin
     end
 
     def ensure_admin
-      guardian.ensure_logged_in
+      guardian.ensure_authenticated!
       raise Discourse::InvalidAccess unless guardian.is_admin?
     end
   end

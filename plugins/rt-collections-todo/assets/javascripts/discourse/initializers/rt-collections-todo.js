@@ -1,22 +1,10 @@
-import { withPluginApi } from "discourse/lib/plugin-api";
-import { i18n } from "discourse-i18n";
-
+/**
+ * Activity 横向 Tab：connectors/user-activity-bottom/rt-collections-todo-tabs.gjs
+ * （Discourse v2026+ 已不再提供旧的「用户资料导航项」Plugin API，勿恢复调用。）
+ */
 export default {
   name: "rt-collections-todo",
-  initialize(container) {
-    withPluginApi("0.8.7", (api) => {
-      api.addUserNavigationItem({
-        name: "my_collection",
-        displayName: i18n("rt_collections_todo.my_collection"),
-        href: (user) => `/u/${user.username}/activity/collection`,
-      });
-
-      api.addUserNavigationItem({
-        name: "to_do_list",
-        displayName: i18n("rt_collections_todo.to_do_list"),
-        href: (user) => `/u/${user.username}/activity/todo`,
-      });
-    });
+  initialize() {
+    /* no-op */
   },
 };
-

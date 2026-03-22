@@ -1,0 +1,9 @@
+zh_CN:
+  js:
+    rt_collections_todo:
+      my_collection: "我的收藏"
+      to_do_list: "待办清单"
+      add_item: "添加条目"
+      product_name: "产品名"
+      product_photo: "产品照片"
+      notes: "备注"
