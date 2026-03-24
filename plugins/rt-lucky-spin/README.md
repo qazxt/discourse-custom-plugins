@@ -15,6 +15,7 @@
 
 ### 前端路由与文案
 
+- **积分界面不刷新**：`User#gamification_score`（discourse-gamification）读 **LeaderboardCachedView 物化视图**；加分后插件会执行与定时任务相同的 `purge_all_stale` → `refresh_all` → `create_all`，且前端抽奖成功后会 `currentUser.findDetails()`。
 - **`rt-lucky-spin-route-map.js`**：扁平注册 `rt-lucky-spin`、`rt-lucky-spin-admin`（模块 id 仍以 `route-map` 结尾，供 `mapRoutes` 扫描）。**禁止**在 initializers / 其它模块里 `import` 本文件（Rollup 会合并 chunk，导致 `requirejs.entries` 无对应键 → permalink `found: false`）。**勿**使用 `enabled_site_setting` 关整包 JS（已移除）。
 - 侧栏 `initializers/rt-lucky-spin.js` 使用 **`href: getURL("/lucky-spin")`**，不要写 `route`。
 - 前端翻译放在 **`config/locales/client.en.yml`**、**`client.zh_CN.yml`**，结构为 `en: js: rt_lucky_spin: ...`（见仓库内示例）。不要使用已移除的 `api.addRoute`。

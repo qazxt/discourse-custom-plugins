@@ -18,6 +18,8 @@ export default class RtLuckySpinController extends Controller {
       const res = await ajax("/rt-lucky-spin/spin", { type: "POST" });
       this.result = res;
       this.model = await ajax("/rt-lucky-spin/state");
+      // 服务端已刷新 LeaderboardCachedView；此处拉新 currentUser，用户卡/导航等积分立即更新
+      await this.currentUser.findDetails();
     } catch (e) {
       popupAjaxError(e);
     } finally {

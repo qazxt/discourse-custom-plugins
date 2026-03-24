@@ -2,31 +2,47 @@ plugins:
   rt_lucky_spin_enabled:
     default: true
     client: true
+    area: "lucky_spin"
   rt_lucky_spin_daily_grant_enabled:
     default: true
+    area: "lucky_spin"
   rt_lucky_spin_points_100_weight:
     default: 1
+    area: "lucky_spin"
   rt_lucky_spin_points_25_weight:
     default: 4
+    area: "lucky_spin"
   rt_lucky_spin_points_5_weight:
     default: 12
+    area: "lucky_spin"
   rt_lucky_spin_no_prize_weight:
     default: 30
+    area: "lucky_spin"
   rt_lucky_spin_points_source_label:
     default: "Lucky Spin"
+    area: "lucky_spin"
   rt_lucky_spin_admin_notify_username:
     default: ""
+    type: username
+    area: "lucky_spin"
   rt_lucky_spin_product_prizes:
     default: ""
     type: list
+    list_type: simple
+    textarea: true
+    area: "lucky_spin"
   rt_lucky_spin_product_prize_chance_per_mille:
     default: 5
+    area: "lucky_spin"
   rt_lucky_spin_weekly_deadline_wday:
     default: 0
+    area: "lucky_spin"
   rt_lucky_spin_weekly_deadline_hour:
     default: 23
+    area: "lucky_spin"
   rt_lucky_spin_weekly_deadline_minute:
     default: 0
+    area: "lucky_spin"
   rt_lucky_spin_weekly_force_window_hours:
     default: 24
-
+    area: "lucky_spin"

@@ -35,7 +35,9 @@ module ::RtLuckySpin
     end
 
     def self.pick_prize_for_spin!(user:, now: Time.zone.now)
-      prize_names = SiteSetting.rt_lucky_spin_product_prizes.to_s.lines.map(&:strip).reject(&:blank?)
+      # list_type: simple 在库里多为 | 分隔；兼容换行
+      prize_names =
+        SiteSetting.rt_lucky_spin_product_prizes.to_s.split(/[|\r\n]+/).map(&:strip).reject(&:blank?)
       return nil if prize_names.empty?
 
       week_start = week_start_date(now)

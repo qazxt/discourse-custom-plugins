@@ -10,6 +10,7 @@
 # 已登录用户从站内点到 /lucky-spin 会走 unknown → permalink-check found: false（页面不存在）。
 # 开关仅用于业务：由 SiteSetting.rt_lucky_spin_enabled + 各控制器 ensure_enabled、侧栏 initializer 判断。
 register_asset "stylesheets/rt-lucky-spin.scss"
+register_site_setting_area "lucky_spin"
 
 module ::RtLuckySpin
   PLUGIN_NAME = "rt-lucky-spin"
