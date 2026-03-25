@@ -71,16 +71,30 @@ module ::RtLuckySpin
           send_user_pm!("Better luck next time!")
           render json: { type: "no_prize" }
         when :product
-          prize_name = result[:name]
-          RtLuckySpin::SpinEvent.create!(
-            user_id: current_user.id,
-            event_type: RtLuckySpin::SpinEvent.event_types[:spin_product_prize],
-            product_prize_name: prize_name,
-            awarded_at: Time.zone.now
+          prize_name = RtLuckySpin::WeeklyPrizePicker.claim_product_prize_for_user!(
+            user: current_user
           )
-          send_user_pm!("你抽中了产品奖励：#{prize_name}。管理员会联系你进行发货。")
-          notify_admin_for_product!(prize_name)
-          render json: { type: "product", name: prize_name }
+
+          if prize_name.present?
+            RtLuckySpin::SpinEvent.create!(
+              user_id: current_user.id,
+              event_type: RtLuckySpin::SpinEvent.event_types[:spin_product_prize],
+              product_prize_name: prize_name,
+              awarded_at: Time.zone.now
+            )
+            send_user_pm!("你抽中了产品奖励：#{prize_name}。管理员会联系你进行发货。")
+            notify_admin_for_product!(prize_name)
+            render json: { type: "product", name: prize_name }
+          else
+            # 处理并发竞争：本轮 wheel 选中了 product 扇区，但名额刚好被别的请求先消耗完。
+            RtLuckySpin::SpinEvent.create!(
+              user_id: current_user.id,
+              event_type: RtLuckySpin::SpinEvent.event_types[:spin_no_prize],
+              awarded_at: Time.zone.now
+            )
+            send_user_pm!("Better luck next time!")
+            render json: { type: "no_prize" }
+          end
         else
           raise ::RtLuckySpin::Error, "unknown result"
         end
@@ -119,7 +133,7 @@ module ::RtLuckySpin
     end
 
     def pick_result
-      product_prize_name = RtLuckySpin::WeeklyPrizePicker.pick_prize_for_spin!(user: current_user)
+      product_eligible = RtLuckySpin::WeeklyPrizePicker.product_prize_eligible?(now: Time.zone.now)
 
       weights = [
         { type: :points, points: 100, weight: SiteSetting.rt_lucky_spin_points_100_weight.to_i },
@@ -127,7 +141,7 @@ module ::RtLuckySpin
         { type: :points, points: 5, weight: SiteSetting.rt_lucky_spin_points_5_weight.to_i },
         { type: :no_prize, weight: SiteSetting.rt_lucky_spin_no_prize_weight.to_i }
       ].select { |w| w[:weight].to_i > 0 }
-      weights << { type: :product, name: product_prize_name, weight: 1 } if product_prize_name.present?
+      weights << { type: :product, weight: 1 } if product_eligible
 
       total = weights.sum { |w| w[:weight] }
       raise ::RtLuckySpin::Error, "invalid weights" if total <= 0

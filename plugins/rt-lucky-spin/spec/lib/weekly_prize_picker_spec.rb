@@ -21,24 +21,36 @@ RSpec.describe RtLuckySpin::WeeklyPrizePicker do
     expect(described_class.week_start_date(now)).to eq(Date.parse("2026-03-16")) # Mon
   end
 
+  it "does not consume winner_user_id during eligibility check" do
+    now = Time.zone.parse("2026-03-18 12:00:00")
+    week_start = described_class.week_start_date(now)
+
+    # 触发 eligibility（chance=1000 + 非强制窗口：应为 true）
+    eligible = described_class.product_prize_eligible?(now: now)
+    expect(eligible).to be(true)
+
+    # eligibility 只判断，不应写入 winner_user_id
+    expect(RtLuckySpin::WeeklyPrize.where(week_start_date: week_start).where.not(winner_user_id: nil)).to be_empty
+  end
+
   it "awards at most one winner per prize per week" do
     now = Time.zone.parse("2026-03-18 12:00:00")
 
-    prize1 = described_class.pick_prize_for_spin!(user: user, now: now)
+    prize1 = described_class.claim_product_prize_for_user!(user: user, now: now)
     expect(prize1).to be_present
 
     # keep picking until we exhaust available prizes
     other = Fabricate(:user)
     prizes = [prize1]
     10.times do
-      p = described_class.pick_prize_for_spin!(user: other, now: now)
+      p = described_class.claim_product_prize_for_user!(user: other, now: now)
       prizes << p if p.present?
       break if prizes.uniq.size >= 2
     end
 
     # after both prizes are awarded, subsequent pick returns nil
-    20.times { described_class.pick_prize_for_spin!(user: other, now: now) }
-    expect(described_class.pick_prize_for_spin!(user: other, now: now)).to be_nil
+    20.times { described_class.claim_product_prize_for_user!(user: other, now: now) }
+    expect(described_class.claim_product_prize_for_user!(user: other, now: now)).to be_nil
   end
 end
 

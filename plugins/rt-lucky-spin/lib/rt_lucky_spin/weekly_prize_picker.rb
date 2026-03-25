@@ -34,7 +34,27 @@ module ::RtLuckySpin
       end
     end
 
-    def self.pick_prize_for_spin!(user:, now: Time.zone.now)
+    # 仅判断是否“允许这次轮盘出现 product 扇区”（不会写 winner_user_id，避免出现
+    # “先分配名额但轮盘没出 product”的错配问题）。
+    def self.product_prize_eligible?(now: Time.zone.now)
+      # list_type: simple 在库里多为 | 分隔；兼容换行
+      prize_names =
+        SiteSetting.rt_lucky_spin_product_prizes.to_s.split(/[|\r\n]+/).map(&:strip).reject(&:blank?)
+      return false if prize_names.empty?
+
+      week_start = week_start_date(now)
+      ensure_week_rows!(week_start: week_start, prize_names: prize_names)
+
+      rows = RtLuckySpin::WeeklyPrize.where(week_start_date: week_start, prize_name: prize_names)
+      unawarded_exists = rows.where(winner_user_id: nil).exists?
+      return false unless unawarded_exists
+
+      any_awarded = rows.where.not(winner_user_id: nil).exists?
+      force_window?(now) ? !any_awarded : SecureRandom.random_number(1000) < SiteSetting.rt_lucky_spin_product_prize_chance_per_mille.to_i
+    end
+
+    # 真正“消费名额”：只在轮盘最终落到 product 时调用。
+    def self.claim_product_prize_for_user!(user:, now: Time.zone.now)
       # list_type: simple 在库里多为 | 分隔；兼容换行
       prize_names =
         SiteSetting.rt_lucky_spin_product_prizes.to_s.split(/[|\r\n]+/).map(&:strip).reject(&:blank?)
@@ -44,15 +64,11 @@ module ::RtLuckySpin
       ensure_week_rows!(week_start: week_start, prize_names: prize_names)
 
       RtLuckySpin::WeeklyPrize.transaction do
-        rows = RtLuckySpin::WeeklyPrize.lock.where(week_start_date: week_start, prize_name: prize_names)
-        any_awarded = rows.where.not(winner_user_id: nil).exists?
-        unawarded = rows.where(winner_user_id: nil).to_a
+        unawarded = RtLuckySpin::WeeklyPrize
+          .lock
+          .where(week_start_date: week_start, prize_name: prize_names, winner_user_id: nil)
+
         return nil if unawarded.empty?
-
-        should_award =
-          force_window?(now) ? !any_awarded : SecureRandom.random_number(1000) < SiteSetting.rt_lucky_spin_product_prize_chance_per_mille.to_i
-
-        return nil unless should_award
 
         chosen = unawarded.sample
         chosen.update!(winner_user_id: user.id, won_at: now)
