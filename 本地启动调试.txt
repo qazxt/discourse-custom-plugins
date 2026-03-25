@@ -142,3 +142,5 @@ A. 后端 Ruby 测试（RSpec）
 只测某个插件：
 ./d/rake "plugin:spec[demo-plugin]"
 你这个骨架插件如果还没写 spec，可能会提示 No specs found，属于正常。
+
+bash /mnt/e/project/discouse-plugins/scripts/full-dev-refresh.sh 
