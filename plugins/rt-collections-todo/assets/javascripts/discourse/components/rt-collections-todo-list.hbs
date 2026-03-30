@@ -40,6 +40,8 @@
         <li class="rt-collections-todo__item">
           {{#if item.image_url}}
             <img class="rt-collections-todo__item-image" src={{item.image_url}} alt="" />
+          {{else}}
+            <div class="rt-collections-todo__item-image rt-collections-todo__item-image--placeholder"></div>
           {{/if}}
           <div class="rt-collections-todo__item-body">
             <div class="rt-collections-todo__item-title">{{item.title}}</div>
@@ -49,7 +51,7 @@
           </div>
           {{#if this.canEdit}}
             <DButton
-              @icon="trash-alt"
+              @icon="trash"
               @title="delete"
               @action={{fn this.remove item}}
               class="btn-danger"

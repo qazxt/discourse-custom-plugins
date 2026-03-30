@@ -47,12 +47,25 @@
   padding: 0.75rem;
 }
 
+.rt-collections-todo__item .btn-danger {
+  width: auto;
+  max-width: max-content;
+  display: inline-flex;
+  justify-self: end;
+  align-self: start;
+  flex: 0 0 auto;
+}
+
 .rt-collections-todo__item-image {
   width: 96px;
   height: 96px;
   object-fit: cover;
   border-radius: 8px;
   background: var(--primary-very-low);
+}
+
+.rt-collections-todo__item-image--placeholder {
+  border: 1px dashed var(--primary-low);
 }
 
 .rt-collections-todo__item-title {

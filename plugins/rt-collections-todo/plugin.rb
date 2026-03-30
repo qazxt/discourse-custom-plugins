@@ -26,6 +26,10 @@ after_initialize do
     class Error < StandardError; end
   end
 
+  # Ensure icons used by this plugin exist in the SVG subset.
+  # Some Discourse versions don't include all FA icons by default.
+  register_svg_icon "trash"
+
   require_relative "app/models/rt_collections_todo/item"
   require_relative "app/controllers/rt_collections_todo/items_controller"
   require_relative "app/serializers/rt_collections_todo/item_serializer"

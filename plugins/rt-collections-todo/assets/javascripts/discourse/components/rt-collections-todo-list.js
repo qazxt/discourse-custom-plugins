@@ -79,7 +79,13 @@ export default class RtCollectionsTodoList extends Component {
           position: 0,
         },
       });
-      this.items = [created, ...this.items];
+      // 新增接口在不同 Discourse 版本可能返回 root 包装对象（而列表渲染期望扁平 item）；
+      // 直接 reload 可统一数据形态，避免“刚新增时图片不显示/删除按钮错位，刷新后恢复”的瞬态错乱。
+      const normalized = created?.rt_collections_todo_item || created?.item || created;
+      if (normalized?.id) {
+        this.items = [normalized, ...this.items];
+      }
+      await this.load();
       this.editingId = null;
     } catch (e) {
       popupAjaxError(e);

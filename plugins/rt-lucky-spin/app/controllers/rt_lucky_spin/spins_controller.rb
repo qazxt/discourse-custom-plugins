@@ -133,7 +133,14 @@ module ::RtLuckySpin
     end
 
     def pick_result
-      product_eligible = RtLuckySpin::WeeklyPrizePicker.product_prize_eligible?(now: Time.zone.now)
+      now = Time.zone.now
+      product_eligible = RtLuckySpin::WeeklyPrizePicker.product_prize_eligible?(now: now)
+
+      # 方案 A：末尾窗口（weekly_force_window_hours）且本周还没人中产品奖时，直接保底出一次 product。
+      # 这里不提前消耗名额，真正写 winner_user_id 在 :product 分支里 claim。
+      if product_eligible && RtLuckySpin::WeeklyPrizePicker.force_window?(now)
+        return { type: :product }
+      end
 
       weights = [
         { type: :points, points: 100, weight: SiteSetting.rt_lucky_spin_points_100_weight.to_i },
