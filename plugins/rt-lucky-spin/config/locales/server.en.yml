@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    descriptions:
+      rt_lucky_spin_sidebar_link_enabled: "Show Lucky Spin link in the community sidebar (logged-in users only). Disable to hide it; the /lucky-spin URL still works if shared directly."

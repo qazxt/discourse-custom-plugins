@@ -3,6 +3,10 @@ plugins:
     default: true
     client: true
     area: "lucky_spin"
+  rt_lucky_spin_sidebar_link_enabled:
+    default: true
+    client: true
+    area: "lucky_spin"
   rt_lucky_spin_daily_grant_enabled:
     default: true
     area: "lucky_spin"

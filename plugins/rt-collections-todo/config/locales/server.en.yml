@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    descriptions:
+      rt_collections_todo_notes_max_length: "Maximum length of item notes in Collection/To-do lists."

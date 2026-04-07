@@ -26,31 +26,33 @@ module ::RtCollectionsTodo
       ensure_can_edit!
 
       item =
-        RtCollectionsTodo::Item.create!(
+        RtCollectionsTodo::Item.new(
           user_id: @target_user.id,
           list_type: RtCollectionsTodo::Item.list_types[@list_type],
           title: params.require(:title),
           notes: params[:notes],
-          upload_id: params[:upload_id],
+          upload_id: normalized_upload_id(params[:upload_id]),
           position: (params[:position] || 0).to_i
         )
 
-      render_serialized(item, RtCollectionsTodo::ItemSerializer)
+      if item.save
+        render_serialized(item, RtCollectionsTodo::ItemSerializer)
+      else
+        render_json_errors(item)
+      end
     end
 
     def update
       ensure_can_edit!
 
       item = find_item!
+      attrs = writable_item_attributes
 
-      item.update!(
-        title: (params[:title] if params.key?(:title)),
-        notes: (params[:notes] if params.key?(:notes)),
-        upload_id: (params[:upload_id] if params.key?(:upload_id)),
-        position: (params[:position].to_i if params.key?(:position))
-      )
-
-      render_serialized(item, RtCollectionsTodo::ItemSerializer)
+      if item.update(attrs)
+        render_serialized(item, RtCollectionsTodo::ItemSerializer)
+      else
+        render_json_errors(item)
+      end
     end
 
     def destroy
@@ -84,6 +86,25 @@ module ::RtCollectionsTodo
       item = RtCollectionsTodo::Item.find_by(id: params[:id], user_id: @target_user.id)
       raise Discourse::NotFound if item.blank?
       item
+    end
+
+    def writable_item_attributes
+      attrs = {}
+      attrs[:title] = params[:title] if params.key?(:title)
+      attrs[:notes] = params[:notes] if params.key?(:notes)
+      attrs[:upload_id] = normalized_upload_id(params[:upload_id]) if params.key?(:upload_id)
+      attrs[:position] = params[:position].to_i if params.key?(:position)
+      attrs
+    end
+
+    def normalized_upload_id(value)
+      return nil if value.blank?
+
+      value.to_i
+    end
+
+    def render_json_errors(record)
+      render json: { errors: record.errors.full_messages }, status: :unprocessable_entity
     end
   end
 end

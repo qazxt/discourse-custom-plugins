@@ -20,15 +20,17 @@ rake db:migrate
 启用开关：
 
 - `rt_collections_todo_enabled`
+- `rt_collections_todo_notes_max_length`（备注最大字数，默认 250）
 
 ### 使用流程（用户视角）
 
 - **入口**：
   - 用户个人资料页 `Activity` 顶部筛选栏会出现 **我的收藏 / 待办清单**。
-  - 用户卡片（user card）元数据区会出现快捷入口（若该 connector 启用）。
+  - 用户卡片上，**用户名下方**会出现「我的收藏 / 待办清单」快捷入口（`user-card-after-username` outlet）。
 - **查看**：所有人可查看用户的列表页面（公开展示）。
-- **编辑**：仅当访问者为该用户本人时显示 **添加条目** 与 **删除** 按钮。
+- **编辑**：仅当访问者为该用户本人时显示 **添加条目**、**编辑**、**删除** 按钮。
 - **新增条目**：填写产品名、备注（可选）、上传图片（可选）→ 保存后出现在列表中。
+- **编辑条目**：可再次修改产品名、备注、图片并保存。
 - **删除条目**：点击垃圾桶按钮删除该条目。
 
 ### 图片上传存储位置
@@ -52,11 +54,12 @@ rake db:migrate
 ### 站点设置
 
 - `rt_collections_todo_enabled`
+- `rt_collections_todo_notes_max_length`
 
 ### 前端入口与文案
 
 - 前端翻译：`config/locales/client.en.yml`、`client.zh_CN.yml`，结构为 `en: js: rt_collections_todo: ...`。
 - 在 `assets/javascripts/discourse/route-map.js` 中把 `collection`、`todo` 挂到 **`user.userActivity`** 下，Ember 路由名为 `userActivity.collection` / `userActivity.todo`（仅有 `routes/user-activity/*.js` 不会自动进 Router）。
 - 用户资料 **Activity** 页顶部的横向筛选栏通过核心 **`user-activity-bottom`** 插件出口注入 **My Collection**、**To do list**（与 `/u/:username/activity/collection`、`/activity/todo` 对应）。
-- 用户卡片元数据区另有快捷链接（`user-card-metadata` connector）。
+- 用户卡片快捷链接接在 **`user-card-after-username`**（与 `user-card-metadata` 相比更靠上，在简介之前）。
 

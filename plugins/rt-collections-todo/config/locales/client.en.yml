@@ -7,3 +7,8 @@ en:
       product_name: "Product name"
       product_photo: "Product photo"
       notes: "Notes"
+      save: "Save"
+      save_changes: "Save changes"
+      cancel: "Cancel"
+      edit: "Edit"
+      delete: "Delete"

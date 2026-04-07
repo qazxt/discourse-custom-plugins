@@ -21,7 +21,7 @@
         </label>
         <label>
           {{i18n "rt_collections_todo.notes"}}
-          <Textarea @value={{this.newNotes}} />
+          <Textarea @value={{this.newNotes}} maxlength={{this.notesMaxLength}} />
         </label>
         <label>
           {{i18n "rt_collections_todo.product_photo"}}
@@ -29,8 +29,15 @@
         </label>
 
         <div class="rt-collections-todo__editor-actions">
-          <DButton @label="save" @action={{this.saveNew}} class="btn-primary" />
-          <DButton @label="cancel" @action={{this.cancelEdit}} />
+          <DButton
+            @label="rt_collections_todo.save"
+            @action={{this.saveNew}}
+            class="btn-primary"
+          />
+          <DButton
+            @label="rt_collections_todo.cancel"
+            @action={{this.cancelEdit}}
+          />
         </div>
       </div>
     {{/if}}
@@ -38,24 +45,62 @@
     <ul class="rt-collections-todo__list">
       {{#each this.items as |item|}}
         <li class="rt-collections-todo__item">
-          {{#if item.image_url}}
-            <img class="rt-collections-todo__item-image" src={{item.image_url}} alt="" />
+          {{#if (and this.canEdit (eq this.editingId item.id))}}
+            <div class="rt-collections-todo__editor rt-collections-todo__editor--inline">
+              <label>
+                {{i18n "rt_collections_todo.product_name"}}
+                <Input @value={{this.editTitle}} />
+              </label>
+              <label>
+                {{i18n "rt_collections_todo.notes"}}
+                <Textarea @value={{this.editNotes}} maxlength={{this.notesMaxLength}} />
+              </label>
+              <label>
+                {{i18n "rt_collections_todo.product_photo"}}
+                <input type="file" accept="image/*" {{on "change" this.onFileChange}} />
+              </label>
+              <div class="rt-collections-todo__editor-actions">
+                <DButton
+                  @label="rt_collections_todo.save_changes"
+                  @action={{fn this.saveEdit item}}
+                  class="btn-primary"
+                />
+                <DButton
+                  @label="rt_collections_todo.cancel"
+                  @action={{this.cancelEdit}}
+                />
+              </div>
+            </div>
           {{else}}
-            <div class="rt-collections-todo__item-image rt-collections-todo__item-image--placeholder"></div>
-          {{/if}}
-          <div class="rt-collections-todo__item-body">
-            <div class="rt-collections-todo__item-title">{{item.title}}</div>
-            {{#if item.notes}}
-              <div class="rt-collections-todo__item-notes">{{item.notes}}</div>
+            {{#if item.image_url}}
+              <img class="rt-collections-todo__item-image" src={{item.image_url}} alt="" />
+            {{else}}
+              <div
+                class="rt-collections-todo__item-image rt-collections-todo__item-image--placeholder"
+              ></div>
             {{/if}}
-          </div>
-          {{#if this.canEdit}}
-            <DButton
-              @icon="trash"
-              @title="delete"
-              @action={{fn this.remove item}}
-              class="btn-danger"
-            />
+            <div class="rt-collections-todo__item-body">
+              <div class="rt-collections-todo__item-title">{{item.title}}</div>
+              {{#if item.notes}}
+                <div class="rt-collections-todo__item-notes">{{item.notes}}</div>
+              {{/if}}
+            </div>
+            {{#if this.canEdit}}
+              <div class="rt-collections-todo__item-actions">
+                <DButton
+                  @icon="pencil"
+                  @title="rt_collections_todo.edit"
+                  @action={{fn this.startEdit item}}
+                  class="btn-default btn-small"
+                />
+                <DButton
+                  @icon="trash"
+                  @title="rt_collections_todo.delete"
+                  @action={{fn this.remove item}}
+                  class="btn-danger"
+                />
+              </div>
+            {{/if}}
           {{/if}}
         </li>
       {{/each}}

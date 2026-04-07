@@ -7,3 +7,8 @@ zh_CN:
       product_name: "产品名"
       product_photo: "产品照片"
       notes: "备注"
+      save: "保存"
+      save_changes: "保存更改"
+      cancel: "取消"
+      edit: "编辑"
+      delete: "删除"

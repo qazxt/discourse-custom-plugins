@@ -1,0 +1,4 @@
+zh_CN:
+  site_settings:
+    descriptions:
+      rt_collections_todo_notes_max_length: "收藏/待办条目备注的最大字数。"

@@ -14,6 +14,11 @@ export default {
         return;
       }
 
+      // 后台可关：隐藏左侧栏「社区」区块内的入口；/lucky-spin 仍可由直达链接打开。
+      if (!siteSettings.rt_lucky_spin_sidebar_link_enabled) {
+        return;
+      }
+
       // 匿名用户不显示入口：未登录点击会被后端 ensure_logged_in 拦截。
       const currentUser = api.getCurrentUser?.();
       if (!currentUser) {

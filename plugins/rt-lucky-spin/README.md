@@ -5,6 +5,7 @@
 ### 站点设置
 
 - `rt_lucky_spin_enabled`（**不再**使用 `enabled_site_setting`，否则关闭时 Discourse 不加载插件 JS，`/lucky-spin` 会进 Ember unknown → permalink 404；侧栏入口由 initializer 按本设置隐藏，API/HTML 仍由 `ensure_enabled` 控制）
+- `rt_lucky_spin_sidebar_link_enabled`：是否在左侧栏显示转盘入口（已登录才显示；关掉后仅隐藏侧栏链接，`/lucky-spin` 仍可直达）
 - `rt_lucky_spin_daily_grant_enabled`
 - 权重：`rt_lucky_spin_points_100_weight` / `rt_lucky_spin_points_25_weight` / `rt_lucky_spin_points_5_weight` / `rt_lucky_spin_no_prize_weight`
 - 产品奖：`rt_lucky_spin_product_prizes`（list）
@@ -57,6 +58,7 @@ rt_lucky_spin_points_100_weight：抽到 100 分的权重
 rt_lucky_spin_points_25_weight：抽到 25 分的权重
 rt_lucky_spin_points_5_weight：抽到 5 分的权重
 rt_lucky_spin_no_prize_weight：谢谢参与的权重
+注意: 抽中奖品的权重固定为1 ！
 怎么配：权重是相对值（越大越常出）。例如 1/4/12/30 会让“谢谢参与”最常见、100 分最稀有。
 
 三、积分事件来源文案
@@ -70,11 +72,12 @@ rt_lucky_spin_product_prizes（list，textarea）
 怎么配：一行一个奖品名即可（插件兼容 | 或换行分隔）。
 rt_lucky_spin_product_prize_chance_per_mille
 
-作用：非末尾窗口时，“本次是否允许出现 product 扇区”的千分比概率（0~1000）。
+作用：非末尾窗口时，“本次是否允许出现 可以中product ”的千分比概率（0~1000）。
 怎么配：
 5 ≈ 0.5% 允许出现 product
 200 ≈ 20%
-1000 ≈ 100%（只代表“允许出现”，末尾窗口外仍要看权重池最终落点）
+1000 ≈ 100%（只代表“允许出现”，末尾窗口外仍要看权重池最终落点） 
+注意: 抽中奖品的权重固定为1 ！所以即使这里配置了100%，其他抽到100分，抽到25分，抽到5分，抽到谢谢参与的权重设置为1，整体抽中奖品的概率也是20%
 rt_lucky_spin_weekly_deadline_wday / hour / minute
 
 作用：定义每周的“截止时刻”（周一作为周起点，wday 用 0=周日..6=周六 映射）。

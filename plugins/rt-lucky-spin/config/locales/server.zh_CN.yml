@@ -1,0 +1,4 @@
+zh_CN:
+  site_settings:
+    descriptions:
+      rt_lucky_spin_sidebar_link_enabled: "是否在左侧栏「社区」区域显示幸运转盘入口（仅对已登录用户显示）。关闭后入口隐藏，仍可通过直接访问 /lucky-spin 打开页面。"

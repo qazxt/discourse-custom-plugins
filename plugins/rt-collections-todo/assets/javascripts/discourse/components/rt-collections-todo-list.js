@@ -8,12 +8,16 @@ import { i18n } from "discourse-i18n";
 
 export default class RtCollectionsTodoList extends Component {
   @service currentUser;
+  @service siteSettings;
   @tracked items = [];
   @tracked loading = true;
   @tracked editingId = null;
   @tracked newTitle = "";
   @tracked newNotes = "";
   @tracked newUploadId = null;
+  @tracked editTitle = "";
+  @tracked editNotes = "";
+  @tracked editUploadId = null;
 
   constructor() {
     super(...arguments);
@@ -36,6 +40,11 @@ export default class RtCollectionsTodoList extends Component {
       return "";
     }
     return `/rt-collections-todo/u/${u}/${this.args.listType}`;
+  }
+
+  get notesMaxLength() {
+    const value = Number(this.siteSettings.rt_collections_todo_notes_max_length);
+    return Number.isFinite(value) && value > 0 ? value : 250;
   }
 
   async load() {
@@ -65,6 +74,9 @@ export default class RtCollectionsTodoList extends Component {
   @action
   cancelEdit() {
     this.editingId = null;
+    this.editTitle = "";
+    this.editNotes = "";
+    this.editUploadId = null;
   }
 
   @action
@@ -103,6 +115,32 @@ export default class RtCollectionsTodoList extends Component {
   }
 
   @action
+  startEdit(item) {
+    this.editingId = item.id;
+    this.editTitle = item.title || "";
+    this.editNotes = item.notes || "";
+    this.editUploadId = item.upload_id || null;
+  }
+
+  @action
+  async saveEdit(item) {
+    try {
+      await ajax(`${this.apiBase}/${item.id}`, {
+        type: "PUT",
+        data: {
+          title: this.editTitle,
+          notes: this.editNotes,
+          upload_id: this.editUploadId,
+        },
+      });
+      await this.load();
+      this.cancelEdit();
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  @action
   async upload(file) {
     try {
       if (!file) {
@@ -118,7 +156,11 @@ export default class RtCollectionsTodoList extends Component {
         processData: false,
         contentType: false,
       });
-      this.newUploadId = upload.id;
+      if (this.editingId === "new") {
+        this.newUploadId = upload.id;
+      } else if (this.editingId) {
+        this.editUploadId = upload.id;
+      }
     } catch (e) {
       popupAjaxError(e);
     }

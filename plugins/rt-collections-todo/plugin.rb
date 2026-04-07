@@ -29,6 +29,7 @@ after_initialize do
   # Ensure icons used by this plugin exist in the SVG subset.
   # Some Discourse versions don't include all FA icons by default.
   register_svg_icon "trash"
+  register_svg_icon "pencil"
 
   require_relative "app/models/rt_collections_todo/item"
   require_relative "app/controllers/rt_collections_todo/items_controller"
