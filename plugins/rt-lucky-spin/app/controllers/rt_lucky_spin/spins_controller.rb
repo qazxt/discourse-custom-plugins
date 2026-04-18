@@ -19,6 +19,13 @@ module ::RtLuckySpin
       render json: {
                available_spins: available_spins_for(current_user),
                today_granted: today_granted?(current_user),
+               segments: wheel_segments_config,
+               rules_title:
+                 SiteSetting.rt_lucky_spin_rules_title.to_s.presence ||
+                   I18n.t("js.rt_lucky_spin.rules_title"),
+               rules_html: cooked_rules_html,
+               prize_image_url: prize_image_url,
+               prize_intro_html: cooked_prize_intro_html,
              }
     end
 
@@ -142,13 +149,19 @@ module ::RtLuckySpin
         return { type: :product }
       end
 
-      weights = [
-        { type: :points, points: 100, weight: SiteSetting.rt_lucky_spin_points_100_weight.to_i },
-        { type: :points, points: 25, weight: SiteSetting.rt_lucky_spin_points_25_weight.to_i },
-        { type: :points, points: 5, weight: SiteSetting.rt_lucky_spin_points_5_weight.to_i },
-        { type: :no_prize, weight: SiteSetting.rt_lucky_spin_no_prize_weight.to_i }
-      ].select { |w| w[:weight].to_i > 0 }
-      weights << { type: :product, weight: 1 } if product_eligible
+      weights = wheel_segments_config.filter_map do |seg|
+        weight = seg[:weight].to_i
+        next if weight <= 0
+        next if seg[:type] == "product" && !product_eligible
+
+        if seg[:type] == "points"
+          { type: :points, points: seg[:points].to_i, weight: weight }
+        elsif seg[:type] == "product"
+          { type: :product, weight: weight }
+        else
+          { type: :no_prize, weight: weight }
+        end
+      end
 
       total = weights.sum { |w| w[:weight] }
       raise ::RtLuckySpin::Error, "invalid weights" if total <= 0
@@ -160,6 +173,67 @@ module ::RtLuckySpin
       end
 
       weights.last
+    end
+
+    def wheel_segments_config
+      [
+        points_segment(1),
+        points_segment(2),
+        points_segment(3),
+        {
+          key: "product",
+          type: "product",
+          label: SiteSetting.rt_lucky_spin_segment_product_label.to_s.presence || "Product",
+          weight: SiteSetting.rt_lucky_spin_segment_product_weight.to_i
+        },
+        {
+          key: "no_prize",
+          type: "no_prize",
+          label: SiteSetting.rt_lucky_spin_segment_no_prize_label.to_s.presence || "No prize",
+          weight: SiteSetting.rt_lucky_spin_segment_no_prize_weight.to_i
+        }
+      ]
+    end
+
+    def points_segment(idx)
+      label = SiteSetting.public_send("rt_lucky_spin_segment_points_#{idx}_label").to_s
+      points = SiteSetting.public_send("rt_lucky_spin_segment_points_#{idx}_value").to_i
+      weight = SiteSetting.public_send("rt_lucky_spin_segment_points_#{idx}_weight").to_i
+      {
+        key: "points_#{idx}",
+        type: "points",
+        label: label.presence || points.to_s,
+        points: [points, 1].max,
+        weight: weight
+      }
+    end
+
+    def cooked_rules_html
+      raw = SiteSetting.rt_lucky_spin_rules_rich_text.to_s
+      return "" if raw.blank?
+
+      PrettyText.cook(raw).to_s
+    end
+
+    def prize_image_url
+      raw = SiteSetting.rt_lucky_spin_prize_image
+      upload_id =
+        if raw.respond_to?(:id)
+          raw.id
+        else
+          raw.to_i
+        end
+
+      return nil if upload_id <= 0
+
+      Upload.find_by(id: upload_id)&.url
+    end
+
+    def cooked_prize_intro_html
+      raw = SiteSetting.rt_lucky_spin_prize_intro.to_s
+      return "" if raw.blank?
+
+      PrettyText.cook(raw).to_s
     end
 
     def send_user_pm!(raw)

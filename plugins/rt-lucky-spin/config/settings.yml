@@ -10,17 +10,78 @@ plugins:
   rt_lucky_spin_daily_grant_enabled:
     default: true
     area: "lucky_spin"
-  rt_lucky_spin_points_100_weight:
+  rt_lucky_spin_segment_points_1_label:
+    default: "100"
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_points_1_value:
+    default: 100
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_points_1_weight:
     default: 1
+    client: true
     area: "lucky_spin"
-  rt_lucky_spin_points_25_weight:
+  rt_lucky_spin_segment_points_2_label:
+    default: "25"
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_points_2_value:
+    default: 25
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_points_2_weight:
     default: 4
+    client: true
     area: "lucky_spin"
-  rt_lucky_spin_points_5_weight:
+  rt_lucky_spin_segment_points_3_label:
+    default: "5"
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_points_3_value:
+    default: 5
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_points_3_weight:
     default: 12
+    client: true
     area: "lucky_spin"
-  rt_lucky_spin_no_prize_weight:
+  rt_lucky_spin_segment_product_label:
+    default: "Product"
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_product_weight:
+    default: 1
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_no_prize_label:
+    default: "No prize"
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_segment_no_prize_weight:
     default: 30
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_rules_title:
+    default: "Spin & WIN Rules"
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_rules_rich_text:
+    default: ""
+    textarea: true
+    markdown: true
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_prize_image:
+    default: ""
+    type: upload
+    client: true
+    area: "lucky_spin"
+  rt_lucky_spin_prize_intro:
+    default: ""
+    textarea: true
+    markdown: true
+    client: true
     area: "lucky_spin"
   rt_lucky_spin_points_source_label:
     default: "Lucky Spin"

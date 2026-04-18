@@ -1,5 +1,5 @@
 .rt-lucky-spin {
-  max-width: 720px;
+  max-width: 1100px;
   margin: 1rem auto;
   padding: 0 1rem;
 }
@@ -7,9 +7,9 @@
 .rt-lucky-spin__header {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 1rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .rt-lucky-spin__title {
@@ -18,10 +18,32 @@
 }
 
 .rt-lucky-spin__actions {
-  margin: 1rem 0;
+  margin: 0.75rem 0 0;
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+.rt-lucky-spin__board {
+  display: grid;
+  grid-template-columns: 220px minmax(260px, 1fr) minmax(240px, 0.9fr);
+  align-items: center;
+  gap: 2rem;
+}
+
+.rt-lucky-spin__board-center {
+  display: flex;
+  justify-content: center;
+}
+
+.rt-lucky-spin__board-title {
+  font-weight: 700;
+  margin-top: 0;
+}
+
+.rt-lucky-spin__board-meta {
+  margin-top: 0.35rem;
+  color: var(--primary-medium);
 }
 
 .rt-lucky-spin__result {
@@ -34,9 +56,54 @@
 
 .rt-lucky-spin-wheel {
   position: relative;
-  width: 320px;
-  height: 320px;
-  margin: 1rem auto 0;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+}
+
+.rt-lucky-spin__board-right {
+  align-self: stretch;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rt-lucky-spin__prize-image {
+  width: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-left: 0.5rem;
+}
+
+.rt-lucky-spin__prize-intro {
+  font-size: var(--font-down-1);
+  line-height: 1.6;
+}
+
+.rt-lucky-spin__rules {
+  margin-top: 2rem;
+  border: 1px solid var(--primary-low);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  background: var(--primary-very-low);
+}
+
+.rt-lucky-spin__rules-title {
+  margin: 0 0 0.5rem;
+  font-size: var(--font-up-1);
+}
+
+.rt-lucky-spin__rules-body > :first-child {
+  margin-top: 0;
+}
+
+.rt-lucky-spin__rules-body > :last-child {
+  margin-bottom: 0;
+}
+
+.rt-lucky-spin__rules-body {
+  line-height: 1.7;
 }
 
 /* 顶点朝下指向圆心；参考：略抬高 + 红色三角 + 阴影 */
@@ -89,10 +156,12 @@
   align-items: center;
   justify-content: center;
   padding: 0 5px;
-  white-space: nowrap;
+  white-space: normal;
   font-weight: 800;
-  font-size: var(--font-up-1);
+  font-size: var(--font-down-1);
   line-height: 1.1;
+  max-width: 84px;
+  text-align: center;
   color: var(--primary);
   /* 参考：浅色描边，在彩色扇区上可读 */
   text-shadow:
@@ -102,6 +171,24 @@
     1px 1px 0 var(--secondary);
   pointer-events: none;
   user-select: none;
+}
+
+@media (max-width: 700px) {
+  .rt-lucky-spin__board {
+    grid-template-columns: 1fr;
+  }
+
+  .rt-lucky-spin__board-left {
+    order: 2;
+  }
+
+  .rt-lucky-spin__board-center {
+    order: 1;
+  }
+
+  .rt-lucky-spin__board-right {
+    order: 3;
+  }
 }
 
 .rt-lucky-spin-admin__table {

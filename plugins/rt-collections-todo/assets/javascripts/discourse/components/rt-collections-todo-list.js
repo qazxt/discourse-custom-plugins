@@ -39,7 +39,7 @@ export default class RtCollectionsTodoList extends Component {
     if (!u) {
       return "";
     }
-    return `/rt-collections-todo/u/${u}/${this.args.listType}`;
+    return `/rt-collections-todo/u/${encodeURIComponent(u)}/${this.args.listType}`;
   }
 
   get notesMaxLength() {

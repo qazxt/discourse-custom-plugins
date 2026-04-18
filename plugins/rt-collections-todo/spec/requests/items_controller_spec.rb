@@ -29,5 +29,13 @@ RSpec.describe RtCollectionsTodo::ItemsController do
     put "/rt-collections-todo/u/#{user.username}/collection/#{item.id}", params: { title: "Y" }
     expect(item.reload.title).to eq("X")
   end
+
+  it "matches usernames containing a dot" do
+    dotted = Fabricate(:user, username: "rt.col.todo")
+    sign_in(dotted)
+
+    get "/rt-collections-todo/u/#{dotted.username}/collection"
+    expect(response.status).to eq(200)
+  end
 end
 

@@ -3,8 +3,10 @@ en:
   js:
     rt_lucky_spin:
       menu_title: "Spin & WIN"
+      page_title: "Spin & Win"
       available_spins: "Spins available"
       spin_button: "Spin"
+      rules_title: "Lucky Spin Rules"
       result_points: "You won %{points} points!"
       result_product: "You won a product prize: %{name}"
       result_no_prize: "Better luck next time!"

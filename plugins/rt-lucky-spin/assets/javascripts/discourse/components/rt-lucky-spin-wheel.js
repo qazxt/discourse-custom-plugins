@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { htmlSafe } from "@ember/template";
 
-const SEGMENTS = [
+const DEFAULT_SEGMENTS = [
   { key: "points_100", label: "100" },
   { key: "points_25", label: "25" },
   { key: "points_5", label: "5" },
@@ -29,11 +29,15 @@ export default class RtLuckySpinWheel extends Component {
   @tracked animating = false;
 
   get segments() {
-    return SEGMENTS;
+    const source = this.args.segments?.length ? this.args.segments : DEFAULT_SEGMENTS;
+    return source.map((seg) => {
+      const label = seg.label?.trim?.() || "";
+      return { ...seg, displayLabel: label || seg.key };
+    });
   }
 
   get segmentAngle() {
-    return 360 / SEGMENTS.length;
+    return 360 / this.segments.length;
   }
 
   get wheelStyle() {
@@ -42,7 +46,7 @@ export default class RtLuckySpinWheel extends Component {
 
   /** 五等分 conic：0° 在 12 点、顺时针（与 转盘参考.html 一致） */
   get faceStyle() {
-    const n = SEGMENTS.length;
+    const n = this.segments.length;
     const a = this.segmentAngle;
     const parts = [];
     for (let i = 0; i < n; i++) {
@@ -68,27 +72,29 @@ export default class RtLuckySpinWheel extends Component {
     );
   }
 
-  segmentKeyForResult(result) {
+  segmentForResult(result) {
     if (!result) {
       return null;
     }
     if (result.type === "points") {
-      if (result.points === 100) return "points_100";
-      if (result.points === 25) return "points_25";
-      return "points_5";
+      return this.segments.find(
+        (seg) => seg.type === "points" && Number(seg.points) === Number(result.points)
+      );
     }
-    if (result.type === "product") return "product";
-    return "no_prize";
+    if (result.type === "product") {
+      return this.segments.find((seg) => seg.type === "product");
+    }
+    return this.segments.find((seg) => seg.type === "no_prize");
   }
 
   @action
   async spinToResult(result) {
-    const key = this.segmentKeyForResult(result);
-    if (!key) {
+    const seg = this.segmentForResult(result);
+    if (!seg) {
       return;
     }
 
-    const idx = SEGMENTS.findIndex((s) => s.key === key);
+    const idx = this.segments.findIndex((s) => s.key === seg.key);
     if (idx < 0) {
       return;
     }
@@ -113,8 +119,8 @@ export default class RtLuckySpinWheel extends Component {
 
   @action
   onResultChanged() {
-    const key = this.segmentKeyForResult(this.args.result);
-    if (!key) {
+    const seg = this.segmentForResult(this.args.result);
+    if (!seg) {
       return;
     }
     this.spinToResult(this.args.result);

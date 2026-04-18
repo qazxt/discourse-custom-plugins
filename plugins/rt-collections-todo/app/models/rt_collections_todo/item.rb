@@ -6,6 +6,7 @@ module ::RtCollectionsTodo
 
     belongs_to :user
     belongs_to :upload, optional: true
+    has_many :upload_references, as: :target, dependent: :destroy
 
     # Rails 8 不再支持 enum 的 keyword 参数写法（enum list_type: {...}）
     enum :list_type, { collection: 0, todo: 1 }
@@ -22,6 +23,14 @@ module ::RtCollectionsTodo
               length: { maximum: ->(_) { Item.notes_max_for_validation } },
               allow_blank: true
     validates :position, numericality: { only_integer: true }
+
+    after_save :sync_upload_references, if: :saved_change_to_upload_id?
+
+    private
+
+    def sync_upload_references
+      UploadReference.ensure_exist!(upload_ids: [upload_id].compact, target: self)
+    end
   end
 end
 

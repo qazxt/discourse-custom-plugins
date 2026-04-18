@@ -89,6 +89,8 @@
   color: var(--primary-medium);
   font-size: var(--font-down-1);
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .rt-collections-todo-usercard {
@@ -99,12 +101,16 @@
   width: 100%;
 }
 
-/* Keep custom tabs at the front in Activity nav */
+/* Activity nav order: All -> My collection -> To-do list -> others */
+.user-navigation .nav-pills > li:first-child {
+  order: -1000;
+}
+
 .user-navigation .rt-collections-todo-tab-collection {
-  order: -2;
+  order: -999;
 }
 
 .user-navigation .rt-collections-todo-tab-todo {
-  order: -1;
+  order: -998;
 }
 

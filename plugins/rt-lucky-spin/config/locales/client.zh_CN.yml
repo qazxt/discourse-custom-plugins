@@ -2,8 +2,10 @@ zh_CN:
   js:
     rt_lucky_spin:
       menu_title: "Spin & WIN 转盘"
+      page_title: "Spin & WIN"
       available_spins: "可用抽奖次数"
       spin_button: "开始抽奖"
+      rules_title: "抽奖规则"
       result_points: "你抽中了 %{points} 分奖励"
       result_product: "你抽中了产品奖励：%{name}"
       result_no_prize: "下次好运！"

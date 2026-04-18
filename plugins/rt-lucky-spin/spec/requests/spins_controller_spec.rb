@@ -15,10 +15,10 @@ RSpec.describe RtLuckySpin::SpinsController do
     SiteSetting.rt_lucky_spin_weekly_force_window_hours = 24 * 8
 
     # 其它奖励权重设为 1（此处不影响保底分支，但保持与讨论一致）
-    SiteSetting.rt_lucky_spin_points_100_weight = 1
-    SiteSetting.rt_lucky_spin_points_25_weight = 1
-    SiteSetting.rt_lucky_spin_points_5_weight = 1
-    SiteSetting.rt_lucky_spin_no_prize_weight = 1
+    SiteSetting.rt_lucky_spin_segment_points_1_weight = 1
+    SiteSetting.rt_lucky_spin_segment_points_2_weight = 1
+    SiteSetting.rt_lucky_spin_segment_points_3_weight = 1
+    SiteSetting.rt_lucky_spin_segment_no_prize_weight = 1
   end
 
   it "guarantees a product prize in force window if none awarded" do

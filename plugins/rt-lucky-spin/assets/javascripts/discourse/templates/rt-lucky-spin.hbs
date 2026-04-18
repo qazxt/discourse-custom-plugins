@@ -1,23 +1,48 @@
 <section class="rt-lucky-spin">
   <header class="rt-lucky-spin__header">
-    <h1 class="rt-lucky-spin__title">{{i18n "rt_lucky_spin.menu_title"}}</h1>
-    <div class="rt-lucky-spin__meta">
-      {{i18n "rt_lucky_spin.available_spins"}}: <b>{{this.model.available_spins}}</b>
-    </div>
+    <h1 class="rt-lucky-spin__title">{{i18n "rt_lucky_spin.page_title"}}</h1>
   </header>
 
-  <RtLuckySpinWheel @result={{this.result}} />
+  <div class="rt-lucky-spin__board">
+    <div class="rt-lucky-spin__board-left">
+      <div class="rt-lucky-spin__board-title">{{i18n "rt_lucky_spin.spin_button"}}</div>
+      <div class="rt-lucky-spin__board-meta">
+        {{i18n "rt_lucky_spin.available_spins"}}:
+        <b>{{this.model.available_spins}}</b>
+      </div>
+      <div class="rt-lucky-spin__actions">
+        <DButton
+          @label="rt_lucky_spin.spin_button"
+          class="btn-primary"
+          @disabled={{or this.spinning (lte this.model.available_spins 0)}}
+          @action={{this.spin}}
+        />
+        {{#if this.currentUser.admin}}
+          <LinkTo @route="rt-lucky-spin-admin" class="btn">{{i18n
+              "rt_lucky_spin.admin_title"
+            }}</LinkTo>
+        {{/if}}
+      </div>
+    </div>
 
-  <div class="rt-lucky-spin__actions">
-    <DButton
-      @label="rt_lucky_spin.spin_button"
-      class="btn-primary"
-      @disabled={{or this.spinning (lte this.model.available_spins 0)}}
-      @action={{this.spin}}
-    />
-    {{#if this.currentUser.admin}}
-      <LinkTo @route="rt-lucky-spin-admin" class="btn">{{i18n "rt_lucky_spin.admin_title"}}</LinkTo>
-    {{/if}}
+    <div class="rt-lucky-spin__board-center">
+      <RtLuckySpinWheel @result={{this.result}} @segments={{this.model.segments}} />
+    </div>
+
+    <div class="rt-lucky-spin__board-right">
+      {{#if this.model.prize_image_url}}
+        <img
+          class="rt-lucky-spin__prize-image"
+          src={{this.model.prize_image_url}}
+          alt=""
+        />
+      {{/if}}
+      {{#if this.model.prize_intro_html}}
+        <div class="rt-lucky-spin__prize-intro">
+          {{{this.model.prize_intro_html}}}
+        </div>
+      {{/if}}
+    </div>
   </div>
 
   {{#if this.result}}
@@ -30,5 +55,14 @@
         {{i18n "rt_lucky_spin.result_no_prize"}}
       {{/if}}
     </div>
+  {{/if}}
+
+  {{#if this.model.rules_html}}
+    <section class="rt-lucky-spin__rules">
+      <h2 class="rt-lucky-spin__rules-title">
+        {{this.model.rules_title}}
+      </h2>
+      <div class="rt-lucky-spin__rules-body">{{{this.model.rules_html}}}</div>
+    </section>
   {{/if}}
 </section>
